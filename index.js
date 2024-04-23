@@ -38,6 +38,19 @@ const client = new Client({
         list.sort((a, b) => a._source.position - b._source.position);
     });
 
+    const byProcessInstance = {};
+    Object.values(aggregate).forEach(list => {
+        list.reduce((acc, curr) => {
+            if (!acc[curr._source.value.processInstanceKey]) {
+                acc[curr._source.value.processInstanceKey] = []
+            }
 
-    console.log(aggregate);
+            acc[curr._source.value.processInstanceKey].push(curr._source);
+
+            return acc;
+        }, byProcessInstance);
+    })
+
+
+    console.log(byProcessInstance);
 })();
