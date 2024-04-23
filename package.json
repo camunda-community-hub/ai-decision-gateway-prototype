@@ -1,0 +1,7 @@
+{
+  "name": "elasticsearch",
+  "version": "1.0.0",
+  "dependencies": {
+    "@elastic/elasticsearch": "^8.13.1"
+  }
+}
