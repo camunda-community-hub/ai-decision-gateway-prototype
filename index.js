@@ -1,56 +1,91 @@
-const { Client } = require('@elastic/elasticsearch');
+const { Client } = require("@elastic/elasticsearch");
 
 const client = new Client({
-    node: 'http://localhost:9200'
+  node: "http://localhost:9200",
 });
 
 (async () => {
-    const variableResult = await client.search({
-        index: 'zeebe-record-variable',
-        size: 10000
-    });
-    const historyResult = await client.search({
-        index: 'zeebe-record-process-instance',
-        size: 10000
-    });
+  const variableResult = await client.search({
+    index: "zeebe-record-variable",
+    size: 10000,
+  });
+  const historyResult = await client.search({
+    index: "zeebe-record-process-instance",
+    size: 10000,
+  });
 
-    let aggregate = variableResult.hits.hits.reduce((acc, curr) => {
-        if (!acc[curr._source.partitionId]) {
-            acc[curr._source.partitionId] = []
+  let aggregate = variableResult.hits.hits.reduce((acc, curr) => {
+    if (!acc[curr._source.partitionId]) {
+      acc[curr._source.partitionId] = [];
+    }
+
+    acc[curr._source.partitionId].push({ type: "variable", event: curr });
+
+    return acc;
+  }, {});
+  aggregate = historyResult.hits.hits.reduce((acc, curr) => {
+    if (!acc[curr._source.partitionId]) {
+      acc[curr._source.partitionId] = [];
+    }
+
+    acc[curr._source.partitionId].push({ type: "history", event: curr });
+
+    return acc;
+  }, aggregate);
+
+  Object.values(aggregate).forEach((list) => {
+    list.sort((a, b) => a.event._source.position - b.event._source.position);
+  });
+
+  const byProcessInstance = {};
+  Object.values(aggregate).forEach((list) => {
+    list.reduce((acc, curr) => {
+      if (!acc[curr.event._source.value.processInstanceKey]) {
+        acc[curr.event._source.value.processInstanceKey] = [];
+      }
+
+      acc[curr.event._source.value.processInstanceKey].push({
+        event: curr.event._source,
+        type: curr.type,
+      });
+
+      return acc;
+    }, byProcessInstance);
+  });
+
+  const byProcessDefinition = {};
+  Object.values(byProcessInstance).forEach((processInstance) => {
+    const variables = {};
+
+    const definition = processInstance[0].event.value.processDefinitionKey;
+    let currentTask;
+    if (!byProcessDefinition[definition]) {
+      byProcessDefinition[definition] = {};
+    }
+    for (let i = 0; i < processInstance.length; i++) {
+      const event = processInstance[i];
+
+      if (event.type === "variable") {
+        variables[event.event.value.name] = event.event.value.value;
+      }
+
+      if (event.type === "history") {
+        if (event.event.intent === "ELEMENT_ACTIVATING") {
+          currentTask = {
+            before: { ...variables },
+          };
         }
-
-        acc[curr._source.partitionId].push(curr);
-
-        return acc;
-    }, {});
-    aggregate = historyResult.hits.hits.reduce((acc, curr) => {
-        if (!acc[curr._source.partitionId]) {
-            acc[curr._source.partitionId] = []
+        if (event.event.intent === "ELEMENT_COMPLETED") {
+          currentTask.after = { ...variables };
+          if (!byProcessDefinition[definition][event.event.value.elementId]) {
+            byProcessDefinition[definition][event.event.value.elementId] = [];
+          }
+          byProcessDefinition[definition][event.event.value.elementId].push(
+            currentTask
+          );
         }
-
-        acc[curr._source.partitionId].push(curr);
-
-        return acc;
-    }, aggregate);
-
-
-    Object.values(aggregate).forEach(list => {
-        list.sort((a, b) => a._source.position - b._source.position);
-    });
-
-    const byProcessInstance = {};
-    Object.values(aggregate).forEach(list => {
-        list.reduce((acc, curr) => {
-            if (!acc[curr._source.value.processInstanceKey]) {
-                acc[curr._source.value.processInstanceKey] = []
-            }
-
-            acc[curr._source.value.processInstanceKey].push(curr._source);
-
-            return acc;
-        }, byProcessInstance);
-    })
-
-
-    console.log(byProcessInstance);
+      }
+    }
+  });
+  console.log(JSON.stringify(byProcessDefinition, null, 2));
 })();
