@@ -87,5 +87,19 @@ const client = new Client({
       }
     }
   });
-  console.log(JSON.stringify(byProcessDefinition, null, 2));
+
+  const processKey = process.argv[2];
+  const taskId = process.argv[3];
+
+  if (processKey && taskId) {
+    const entries = byProcessDefinition[processKey][taskId].map((e) => e.after);
+
+    const keys = Object.keys(entries[0]);
+    const values = entries.map((entry) => keys.map((key) => entry[key]));
+
+    const csv =
+      keys.join(",") + "\n" + values.map((value) => value.join(",")).join("\n");
+
+    console.log(csv);
+  }
 })();
