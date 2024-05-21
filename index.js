@@ -92,10 +92,35 @@ const client = new Client({
   const taskId = process.argv[3];
 
   if (processKey && taskId) {
-    const entries = byProcessDefinition[processKey][taskId].map((e) => e.after);
+    const entries = byProcessDefinition[processKey][taskId];
 
-    const keys = Object.keys(entries[0]);
-    const values = entries.map((entry) => keys.map((key) => entry[key]));
+    let inputs = new Set();
+    let outputs = new Set();
+
+    entries.forEach(({ before, after }) => {
+      const inKeys = Object.keys(before);
+      inKeys.forEach((inkey) => {
+        inputs.add(inkey);
+      });
+      const outkeys = Object.keys(after);
+      outkeys.forEach((outkey) => {
+        if (before[outkey] !== after[outkey]) {
+          outputs.add(outkey);
+        }
+      });
+    });
+
+    inputs = Array.from(inputs);
+    outputs = Array.from(outputs);
+
+    const keys = [
+      ...inputs.map((key) => "Input: " + key),
+      ...outputs.map((key) => "Output: " + key),
+    ];
+    const values = entries.map(({ before, after }) => [
+      ...inputs.map((key) => before[key]),
+      ...outputs.map((key) => after[key]),
+    ]);
 
     const csv =
       keys.join(",") + "\n" + values.map((value) => value.join(",")).join("\n");
