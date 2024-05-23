@@ -54,39 +54,45 @@ const client = new Client({
   });
 
   const byProcessDefinition = {};
-  Object.values(byProcessInstance).forEach((processInstance) => {
-    const variables = {};
 
-    const definition = processInstance[0].event.value.processDefinitionKey;
-    let currentTask;
-    if (!byProcessDefinition[definition]) {
-      byProcessDefinition[definition] = {};
-    }
-    for (let i = 0; i < processInstance.length; i++) {
-      const event = processInstance[i];
+  Object.entries(byProcessInstance).forEach(
+    ([processInstanceId, processInstance]) => {
+      const variables = {};
 
-      if (event.type === "variable") {
-        variables[event.event.value.name] = event.event.value.value;
+      const definition = processInstance[0].event.value.processDefinitionKey;
+      let currentTask;
+      if (!byProcessDefinition[definition]) {
+        byProcessDefinition[definition] = {};
       }
+      for (let i = 0; i < processInstance.length; i++) {
+        const event = processInstance[i];
 
-      if (event.type === "history") {
-        if (event.event.intent === "ELEMENT_ACTIVATING") {
-          currentTask = {
-            before: { ...variables },
-          };
+        if (event.type === "variable") {
+          variables[event.event.value.name] = event.event.value.value;
         }
-        if (event.event.intent === "ELEMENT_COMPLETED") {
-          currentTask.after = { ...variables };
-          if (!byProcessDefinition[definition][event.event.value.elementId]) {
-            byProcessDefinition[definition][event.event.value.elementId] = [];
+
+        if (event.type === "history") {
+          if (event.event.intent === "ELEMENT_ACTIVATING") {
+            currentTask = {
+              before: { ...variables },
+              processInstanceId,
+              start: event.event.timestamp,
+            };
           }
-          byProcessDefinition[definition][event.event.value.elementId].push(
-            currentTask
-          );
+          if (event.event.intent === "ELEMENT_COMPLETED") {
+            currentTask.after = { ...variables };
+            currentTask.end = event.event.timestamp;
+            if (!byProcessDefinition[definition][event.event.value.elementId]) {
+              byProcessDefinition[definition][event.event.value.elementId] = [];
+            }
+            byProcessDefinition[definition][event.event.value.elementId].push(
+              currentTask
+            );
+          }
         }
       }
     }
-  });
+  );
 
   const processKey = process.argv[2];
   const taskId = process.argv[3];
@@ -114,13 +120,21 @@ const client = new Client({
     outputs = Array.from(outputs);
 
     const keys = [
+      "Process Instance Key",
+      "StartTime",
+      "EndTime",
       ...inputs.map((key) => "Input: " + key),
       ...outputs.map((key) => "Output: " + key),
     ];
-    const values = entries.map(({ before, after }) => [
-      ...inputs.map((key) => before[key]),
-      ...outputs.map((key) => after[key]),
-    ]);
+    const values = entries.map(
+      ({ before, after, processInstanceId, start, end }) => [
+        processInstanceId,
+        new Date(start).toISOString(),
+        new Date(end).toISOString(),
+        ...inputs.map((key) => before[key]),
+        ...outputs.map((key) => after[key]),
+      ]
+    );
 
     const csv =
       keys.join(",") + "\n" + values.map((value) => value.join(",")).join("\n");
