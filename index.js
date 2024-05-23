@@ -1,4 +1,6 @@
 const { Client } = require("@elastic/elasticsearch");
+const { writeFile } = require("node:fs");
+const { Buffer } = require("node:buffer");
 
 const client = new Client({
   node: "http://localhost:9200",
@@ -98,47 +100,63 @@ const client = new Client({
   const taskId = process.argv[3];
 
   if (processKey && taskId) {
-    const entries = byProcessDefinition[processKey][taskId];
-
-    let inputs = new Set();
-    let outputs = new Set();
-
-    entries.forEach(({ before, after }) => {
-      const inKeys = Object.keys(before);
-      inKeys.forEach((inkey) => {
-        inputs.add(inkey);
-      });
-      const outkeys = Object.keys(after);
-      outkeys.forEach((outkey) => {
-        if (before[outkey] !== after[outkey]) {
-          outputs.add(outkey);
+    console.log(getCSV(byProcessDefinition[processKey][taskId]));
+  } else if (processKey && !taskId) {
+    // no task specified, export all tasks
+    Object.entries(byProcessDefinition[processKey]).forEach(
+      ([task, entries]) => {
+        const csv = getCSV(entries);
+        if (csv.split("\n")[0].split(",").pop().startsWith("Output: ")) {
+          writeFile(task + ".csv", new Uint8Array(Buffer.from(csv)), (err) => {
+            if (err) throw err;
+            console.log("created " + task + ".csv");
+          });
+        } else {
+          console.log(task + " does not contain variable changes");
         }
-      });
-    });
-
-    inputs = Array.from(inputs);
-    outputs = Array.from(outputs);
-
-    const keys = [
-      "Process Instance Key",
-      "StartTime",
-      "EndTime",
-      ...inputs.map((key) => "Input: " + key),
-      ...outputs.map((key) => "Output: " + key),
-    ];
-    const values = entries.map(
-      ({ before, after, processInstanceId, start, end }) => [
-        processInstanceId,
-        new Date(start).toISOString(),
-        new Date(end).toISOString(),
-        ...inputs.map((key) => before[key]),
-        ...outputs.map((key) => after[key]),
-      ]
+      }
     );
-
-    const csv =
-      keys.join(",") + "\n" + values.map((value) => value.join(",")).join("\n");
-
-    console.log(csv);
   }
 })();
+
+function getCSV(entries) {
+  let inputs = new Set();
+  let outputs = new Set();
+
+  entries.forEach(({ before, after }) => {
+    const inKeys = Object.keys(before);
+    inKeys.forEach((inkey) => {
+      inputs.add(inkey);
+    });
+    const outkeys = Object.keys(after);
+    outkeys.forEach((outkey) => {
+      if (before[outkey] !== after[outkey]) {
+        outputs.add(outkey);
+      }
+    });
+  });
+
+  inputs = Array.from(inputs);
+  outputs = Array.from(outputs);
+
+  const keys = [
+    "Process Instance Key",
+    "StartTime",
+    "EndTime",
+    ...inputs.map((key) => "Input: " + key),
+    ...outputs.map((key) => "Output: " + key),
+  ];
+  const values = entries.map(
+    ({ before, after, processInstanceId, start, end }) => [
+      processInstanceId,
+      new Date(start).toISOString(),
+      new Date(end).toISOString(),
+      ...inputs.map((key) => before[key]),
+      ...outputs.map((key) => after[key]),
+    ]
+  );
+
+  return (
+    keys.join(",") + "\n" + values.map((value) => value.join(",")).join("\n")
+  );
+}
