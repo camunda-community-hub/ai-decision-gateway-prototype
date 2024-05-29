@@ -106,14 +106,10 @@ const client = new Client({
     Object.entries(byProcessDefinition[processKey]).forEach(
       ([task, entries]) => {
         const csv = getCSV(entries);
-        if (csv.split("\n")[0].split(",").pop().startsWith("Output: ")) {
-          writeFile(task + ".csv", new Uint8Array(Buffer.from(csv)), (err) => {
-            if (err) throw err;
-            console.log("created " + task + ".csv");
-          });
-        } else {
-          console.log(task + " does not contain variable changes");
-        }
+        writeFile(task + ".csv", new Uint8Array(Buffer.from(csv)), (err) => {
+          if (err) throw err;
+          console.log("created " + task + ".csv");
+        });
       }
     );
   }
