@@ -7,7 +7,9 @@ export async function GET(request, { params }) {
     return new Response("Invalid Request", { status: 400 });
   }
 
-  const list = await getList();
+  const { data, labels } = await getList();
+
+  const list = data;
   try {
     return new Response(getCSV(list[processKey][taskId.slice(0, -4)]), {
       status: 200,

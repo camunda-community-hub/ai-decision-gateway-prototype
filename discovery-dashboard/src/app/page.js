@@ -1,7 +1,7 @@
 import { getList } from "./utils";
 
 export default async function Home() {
-  const data = await getList();
+  const { data, labels } = await getList();
 
   const rows = Object.entries(data).flatMap(([processKey, activities]) =>
     Object.entries(activities).map(([taskId, taskData]) => [
@@ -12,7 +12,6 @@ export default async function Home() {
   );
 
   rows.sort((a, b) => b[2] - a[2]);
-  console.log(rows);
 
   return (
     <main>
@@ -28,8 +27,10 @@ export default async function Home() {
         <tbody>
           {rows.map(([processKey, taskId, taskData]) => (
             <tr key={`${processKey}-${taskId}`}>
-              <th>{processKey}</th>
-              <th>{taskId}</th>
+              <th>
+                {labels[processKey].name} (v{labels[processKey].version})
+              </th>
+              <th>{labels[processKey].tasks[taskId]}</th>
               <td>{taskData}</td>
               <td>
                 <a

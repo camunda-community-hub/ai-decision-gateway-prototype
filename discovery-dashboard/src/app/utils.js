@@ -1,12 +1,12 @@
 import { cache } from "react";
 import { Client } from "@elastic/elasticsearch";
+import BpmnModdle from "bpmn-moddle";
 
 const client = new Client({
   node: "http://localhost:9200",
 });
 
 export const getList = cache(async () => {
-  console.log("performing requests");
   const variableResult = await client.search({
     index: "zeebe-record-variable",
     size: 10000,
@@ -15,6 +15,35 @@ export const getList = cache(async () => {
     index: "zeebe-record-process-instance",
     size: 10000,
   });
+  const processResult = await client.search({
+    index: "zeebe-record-process",
+    size: 10000,
+  });
+
+  const processes = {};
+
+  for (let i = 0; i < processResult.hits.hits.length; i++) {
+    const entry = processResult.hits.hits[i];
+
+    const moddle = new BpmnModdle();
+    const parsed = await moddle.fromXML(atob(entry._source.value.resource));
+
+    let processName = "";
+    const tasks = {};
+    Object.entries(parsed.elementsById).forEach(([key, value]) => {
+      tasks[key] = value.name || value.id;
+
+      if (value.$type === "bpmn:Process") {
+        processName = value.name || value.id;
+      }
+    });
+
+    processes[entry._source.value.processDefinitionKey] = {
+      tasks,
+      name: processName,
+      version: entry._source.value.version,
+    };
+  }
 
   let aggregate = variableResult.hits.hits.reduce((acc, curr) => {
     if (!acc[curr._source.partitionId]) {
@@ -96,5 +125,8 @@ export const getList = cache(async () => {
     }
   );
 
-  return byProcessDefinition;
+  return {
+    data: byProcessDefinition,
+    labels: processes,
+  };
 });
