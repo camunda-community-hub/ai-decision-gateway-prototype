@@ -6,7 +6,13 @@ const client = new Client({
   node: "http://localhost:9200",
 });
 
+let resultCache;
+
 export const getList = cache(async () => {
+  if (resultCache) {
+    return resultCache;
+  }
+
   const variableResult = await client.search({
     index: "zeebe-record-variable",
     size: 10000,
@@ -125,8 +131,10 @@ export const getList = cache(async () => {
     }
   );
 
-  return {
+  resultCache = {
     data: byProcessDefinition,
     labels: processes,
   };
+
+  return resultCache;
 });
