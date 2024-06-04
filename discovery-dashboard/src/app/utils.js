@@ -8,28 +8,46 @@ const client = new Client({
 
 let resultCache;
 
+async function search(index) {
+  const out = [];
+  let lastSearch = null;
+
+  while (1) {
+    const args = {
+      index,
+      sort: [{ position: "asc" }],
+      size: 9999,
+    };
+    if (lastSearch) {
+      args.search_after = lastSearch;
+    }
+
+    const result = await client.search(args);
+
+    if (result.hits.hits.length) {
+      out.push(result.hits.hits);
+      lastSearch = result.hits.hits[result.hits.hits.length - 1].sort;
+    } else {
+      break;
+    }
+  }
+
+  return out.flat();
+}
+
 export const getList = cache(async () => {
   if (resultCache) {
     return resultCache;
   }
 
-  const variableResult = await client.search({
-    index: "zeebe-record-variable",
-    size: 10000,
-  });
-  const historyResult = await client.search({
-    index: "zeebe-record-process-instance",
-    size: 10000,
-  });
-  const processResult = await client.search({
-    index: "zeebe-record-process",
-    size: 10000,
-  });
+  const variableResult = await search("zeebe-record-variable");
+  const historyResult = await search("zeebe-record-process-instance");
+  const processResult = await search("zeebe-record-process");
 
   const processes = {};
 
-  for (let i = 0; i < processResult.hits.hits.length; i++) {
-    const entry = processResult.hits.hits[i];
+  for (let i = 0; i < processResult.length; i++) {
+    const entry = processResult[i];
 
     const moddle = new BpmnModdle();
     const parsed = await moddle.fromXML(atob(entry._source.value.resource));
@@ -51,7 +69,7 @@ export const getList = cache(async () => {
     };
   }
 
-  let aggregate = variableResult.hits.hits.reduce((acc, curr) => {
+  let aggregate = variableResult.reduce((acc, curr) => {
     if (!acc[curr._source.partitionId]) {
       acc[curr._source.partitionId] = [];
     }
@@ -60,7 +78,7 @@ export const getList = cache(async () => {
 
     return acc;
   }, {});
-  aggregate = historyResult.hits.hits.reduce((acc, curr) => {
+  aggregate = historyResult.reduce((acc, curr) => {
     if (!acc[curr._source.partitionId]) {
       acc[curr._source.partitionId] = [];
     }
@@ -116,7 +134,7 @@ export const getList = cache(async () => {
               start: event.event.timestamp,
             };
           }
-          if (event.event.intent === "ELEMENT_COMPLETED") {
+          if (event.event.intent === "ELEMENT_COMPLETED" && currentTask) {
             currentTask.after = { ...variables };
             currentTask.end = event.event.timestamp;
             if (!byProcessDefinition[definition][event.event.value.elementId]) {
