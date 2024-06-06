@@ -1,1 +1,9 @@
 @use "@carbon/react";
+
+.disabled td {
+  color: #999 !important;
+}
+
+.important {
+  font-weight: bold;
+}

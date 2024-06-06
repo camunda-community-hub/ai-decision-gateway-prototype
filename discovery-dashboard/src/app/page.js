@@ -26,11 +26,16 @@ export default function Home() {
     ])
   );
 
-  rows.sort((a, b) => b[2] - a[2]);
+  rows.sort((a, b) => {
+    if (a[2][1] !== b[2][1]) {
+      return b[2][1] - a[2][1];
+    }
+    return b[2][0] - a[2][0];
+  });
 
   return (
     <main>
-      <Table useZebraStyles>
+      <Table>
         <TableHead>
           <TableRow>
             <TableHeader>Process Name</TableHeader>
@@ -41,12 +46,21 @@ export default function Home() {
         </TableHead>
         <TableBody>
           {rows.map(([processKey, taskId, taskData]) => (
-            <TableRow key={`${processKey}-${taskId}`}>
+            <TableRow
+              key={`${processKey}-${taskId}`}
+              className={
+                taskData[1] === 0
+                  ? "disabled"
+                  : taskData[1] === 2
+                  ? "important"
+                  : ""
+              }
+            >
               <TableCell>
                 {labels[processKey].name} (v{labels[processKey].version})
               </TableCell>
               <TableCell>{labels[processKey].tasks[taskId]}</TableCell>
-              <TableCell>{taskData}</TableCell>
+              <TableCell>{taskData[0]}</TableCell>
               <TableCell>
                 <Link
                   href={`/export/${processKey}/${taskId}.csv`}
