@@ -1,10 +1,51 @@
+import fs from "fs";
+
 import { cache } from "react";
 import { Client } from "@elastic/elasticsearch";
 import BpmnModdle from "bpmn-moddle";
 
-const client = new Client({
-  node: "http://localhost:9200",
-});
+const es_config = {
+  node: process.env.ES_ENDPOINT,
+};
+
+if (process.env.ES_CA_CERT_PATH || process.env.ES_CA_FINGERPRINT) {
+  es_config.tls = {
+    rejectUnauthorized: false,
+  };
+}
+
+if (process.env.ES_CA_CERT_PATH) {
+  es_config.tls.ca = fs.readFileSync(process.env.ES_CA_CERT_PATH);
+}
+if (process.env.ES_CA_FINGERPRINT) {
+  es_config.caFingerprint = process.env.ES_CA_FINGERPRINT;
+}
+
+if (process.env.ES_API_KEY && !process.env.ES_API_KEY_ID) {
+  es_config.auth = { apiKey: process.env.ES_API_KEY };
+}
+
+if (process.env.ES_API_KEY && process.env.ES_API_KEY_ID) {
+  es_config.auth = {
+    apiKey: {
+      id: process.env.ES_API_KEY_ID,
+      api_key: process.env.ES_API_KEY,
+    },
+  };
+}
+
+if (process.env.ES_BEARER) {
+  es_config.auth = es_config.auth || {};
+  es_config.auth.bearer = process.env.ES_BEARER;
+}
+
+if (process.env.ES_USERNAME && process.env.ES_PASSWORD) {
+  es_config.auth = es_config.auth || {};
+  es_config.auth.username = process.env.ES_USERNAME;
+  es_config.auth.password = process.env.ES_PASSWORD;
+}
+
+const client = new Client(es_config);
 
 let resultCache;
 
