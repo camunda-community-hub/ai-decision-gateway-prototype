@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { DataTable, Link } from "@carbon/react";
+import { DataTable, Link, Checkbox, CheckboxGroup } from "@carbon/react";
 const { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } =
   DataTable;
 
 export default function Home() {
   const [data, setData] = useState({});
   const [labels, setLabels] = useState({});
+
+  const [onlyUserTasks, setOnlyUserTasks] = useState(true);
+  const [onlyDecisions, setOnlyDecisions] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -18,13 +21,20 @@ export default function Home() {
     })();
   }, []);
 
-  const rows = Object.entries(data).flatMap(([processKey, activities]) =>
-    Object.entries(activities).map(([taskId, taskData]) => [
-      processKey,
-      taskId,
-      taskData,
-    ])
-  );
+  const rows = Object.entries(data)
+    .flatMap(([processKey, activities]) =>
+      Object.entries(activities).map(([taskId, taskData]) => [
+        processKey,
+        taskId,
+        taskData,
+      ])
+    )
+    .filter((row) => {
+      if (onlyUserTasks && !row[2][2]) return false;
+      if (onlyDecisions && row[2][1] !== 2) return false;
+
+      return true;
+    });
 
   rows.sort((a, b) => {
     if (a[2][1] !== b[2][1]) {
@@ -35,6 +45,20 @@ export default function Home() {
 
   return (
     <main>
+      <CheckboxGroup legendText="Filters" orientation="horizontal">
+        <Checkbox
+          labelText="Only UserTasks"
+          checked={onlyUserTasks}
+          id="usertask-checkbox"
+          onChange={(_, { checked }) => setOnlyUserTasks(checked)}
+        />
+        <Checkbox
+          labelText="Only Decisions"
+          checked={onlyDecisions}
+          id="decisions-checkbox"
+          onChange={(_, { checked }) => setOnlyDecisions(checked)}
+        />
+      </CheckboxGroup>
       <Table>
         <TableHead>
           <TableRow>

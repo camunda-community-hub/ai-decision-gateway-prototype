@@ -172,6 +172,7 @@ export const getList = cache(async () => {
             currentTask = {
               before: { ...variables },
               processInstanceId,
+              isUserTask: event.event.value.bpmnElementType === "USER_TASK",
               start: event.event.timestamp,
             };
           }
