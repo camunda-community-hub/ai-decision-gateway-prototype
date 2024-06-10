@@ -1,9 +1,22 @@
 @use "@carbon/react";
 
+@use "@carbon/react/scss/spacing" as *;
+@use "@carbon/react/scss/type" as *;
+@use "@carbon/react/scss/breakpoint" as *;
+@use "@carbon/react/scss/theme" as *;
+
 .disabled td {
   color: #999 !important;
 }
 
 .important {
   font-weight: bold;
+}
+.list_header {
+  padding-top: $spacing-05;
+  padding-bottom: $spacing-07;
+}
+
+.list_filters {
+  padding-bottom: $spacing-06;
 }
