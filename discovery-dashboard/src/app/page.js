@@ -9,7 +9,10 @@ import {
   CheckboxGroup,
   Grid,
   Column,
+  Tooltip,
 } from "@carbon/react";
+import { Information } from "@carbon/icons-react";
+
 const { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } =
   DataTable;
 
@@ -69,12 +72,28 @@ export default function Home() {
             id="usertask-checkbox"
             onChange={(_, { checked }) => setOnlyUserTasks(checked)}
           />
+          <div className="tooltip_container">
+            <Tooltip
+              align="bottom"
+              label="Exclude activities that are not User Tasks."
+            >
+              <Information />
+            </Tooltip>
+          </div>
           <Checkbox
             labelText="Only Decisions"
             checked={onlyDecisions}
             id="decisions-checkbox"
             onChange={(_, { checked }) => setOnlyDecisions(checked)}
           />
+          <div className="tooltip_container">
+            <Tooltip
+              align="bottom"
+              label="Exclude activities that don't change variables, or that always change variables to the same value (e.g. completed=true), or that always change variables to a different value (e.g. assigning UUIDs)"
+            >
+              <Information />
+            </Tooltip>
+          </div>
         </CheckboxGroup>
       </Column>
       <Column lg={16} md={8} sm={4}>
