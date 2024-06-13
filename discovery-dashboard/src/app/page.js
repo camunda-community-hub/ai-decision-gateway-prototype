@@ -132,9 +132,12 @@ export default function Home() {
                   }
                 >
                   <TableCell>
-                    {labels[processKey].name} (v{labels[processKey].version})
+                    {labels[processKey]?.name || processKey} (v
+                    {labels[processKey]?.version || ""})
                   </TableCell>
-                  <TableCell>{labels[processKey].tasks[taskId]}</TableCell>
+                  <TableCell>
+                    {labels[processKey]?.tasks?.[taskId] || taskId}
+                  </TableCell>
                   <TableCell>{taskData[0]}</TableCell>
                   <TableCell>
                     <Link
