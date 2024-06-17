@@ -15,6 +15,7 @@ export async function GET(request, { params }) {
       status: 200,
     });
   } catch (e) {
+    console.log(e);
     return new Response("Invalid Request", { status: 400 });
   }
 }
@@ -51,8 +52,28 @@ function getCSV(entries) {
       processInstanceId,
       new Date(start).toISOString(),
       new Date(end).toISOString(),
-      ...inputs.map((key) => before[key]),
-      ...outputs.map((key) => after[key]),
+      ...inputs.map((key) => {
+        if (!before[key]) return before[key];
+        const parsed = JSON.parse(before[key]);
+        if (typeof parsed === "string") {
+          return `"${parsed.replaceAll(`"`, `\"`)}"`;
+        }
+        if (typeof parsed === "object") {
+          return `"${JSON.stringify(parsed).replaceAll(`"`, `""`)}"`;
+        }
+        return parsed.toString();
+      }),
+      ...outputs.map((key) => {
+        if (!after[key]) return after[key];
+        const parsed = JSON.parse(after[key]);
+        if (typeof parsed === "string") {
+          return `"${parsed.replaceAll(`"`, `\"`)}"`;
+        }
+        if (typeof parsed === "object") {
+          return `"${JSON.stringify(parsed).replaceAll(`"`, `""`)}"`;
+        }
+        return parsed.toString();
+      }),
     ]
   );
 
