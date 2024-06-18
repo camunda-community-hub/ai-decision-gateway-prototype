@@ -143,9 +143,34 @@ export default function Home() {
                     <Link
                       href={`/export/${processKey}/${taskId}.csv`}
                       download={`${taskId}.csv`}
+                      style={{ fontSize: "1em" }}
                     >
-                      Download Dataset
+                      Download Full Dataset
                     </Link>
+                    <br />
+                    {+taskData[0] >= 15 ? (
+                      <span className="separate-sets">
+                        <Link
+                          href={`/export/${processKey}/training/${taskId}_training.csv`}
+                          download={`${taskId}_training.csv`}
+                          style={{ fontSize: "inherit" }}
+                        >
+                          Training Dataset
+                        </Link>{" "}
+                        -{" "}
+                        <Link
+                          href={`/export/${processKey}/validation/${taskId}_validation.csv`}
+                          download={`${taskId}_validation.csv`}
+                          style={{ fontSize: "inherit" }}
+                        >
+                          Validation Dataset
+                        </Link>
+                      </span>
+                    ) : (
+                      <span className="not-enough-data">
+                        Not enough data for validation dataset
+                      </span>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
