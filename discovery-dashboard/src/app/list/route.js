@@ -13,7 +13,7 @@ export async function GET() {
               task,
               list.data[process][task].length,
               isInteresting(list.data[process][task]),
-              list.data[process][task][0].isUserTask,
+              list.data[process][task].some((task) => task.isUserTask),
             ])
             .reduce((acc, [task, count, interestingFactor, isUserTask]) => {
               acc[task] = [count, interestingFactor, isUserTask];
