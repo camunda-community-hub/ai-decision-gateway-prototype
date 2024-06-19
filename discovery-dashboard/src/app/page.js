@@ -132,8 +132,10 @@ export default function Home() {
                   }
                 >
                   <TableCell>
-                    {labels[processKey]?.name || processKey} (v
-                    {labels[processKey]?.version || ""})
+                    {labels[processKey]?.name || processKey}{" "}
+                    {labels[processKey]?.version
+                      ? `(v${labels[processKey].version})`
+                      : ""}
                   </TableCell>
                   <TableCell>
                     {labels[processKey]?.tasks?.[taskId] || taskId}
