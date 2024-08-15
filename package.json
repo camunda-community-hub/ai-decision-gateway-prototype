@@ -1,7 +1,25 @@
 {
-  "name": "elasticsearch",
-  "version": "1.0.0",
+  "name": "discovery-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
   "dependencies": {
-    "@elastic/elasticsearch": "^8.13.1"
+    "@carbon/icons-react": "^11.43.0",
+    "@carbon/react": "^1.59.0",
+    "@elastic/elasticsearch": "^8.13.1",
+    "bpmn-moddle": "^9.0.1",
+    "next": "14.2.3",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
+    "sass": "^1.77.4"
   }
 }
