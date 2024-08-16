@@ -1,0 +1,765 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="2f4fbd4" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.6.0" camunda:diagramRelationId="275d1be2-5a3a-4c78-a077-6b723206e55f">
+  <bpmn:collaboration id="Collaboration_0wtx8ze" name="AIDG Playbook process - full">
+    <bpmn:participant id="Participant_1yaotn7" name="Camunda 8" processRef="AIDG_HumanInTheLoop" />
+    <bpmn:participant id="Participant_03tcz7e" name="AI Decision Model" processRef="Process_0vy27uk" />
+    <bpmn:messageFlow id="Flow_1fju6po" name="decision" sourceRef="Participant_03tcz7e" targetRef="ModelInference" />
+    <bpmn:messageFlow id="Flow_04ej3j3" name="input data" sourceRef="ModelInference" targetRef="Participant_03tcz7e" />
+  </bpmn:collaboration>
+  <bpmn:process id="AIDG_HumanInTheLoop" name="AIDG - Human in the loop" isExecutable="true">
+    <bpmn:extensionElements>
+      <zeebe:userTaskForm id="UserTaskForm_019h49d">{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.5.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "2152425"
+  },
+  "schemaVersion": 16,
+  "id": "Form_iun5mor",
+  "components": [
+    {
+      "text": "# Loan Application",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_07c0ygr",
+        "columns": null
+      },
+      "id": "Field_18oxemb"
+    },
+    {
+      "text": "### Personal Information",
+      "type": "text",
+      "id": "Heading_0",
+      "layout": {
+        "row": "row_0",
+        "columns": null
+      }
+    },
+    {
+      "label": "Age",
+      "type": "number",
+      "layout": {
+        "row": "row_1",
+        "columns": null
+      },
+      "id": "Field_0v9oveh",
+      "key": "applicant_age",
+      "decimalDigits": 0,
+      "increment": "1",
+      "readonly": false,
+      "validate": {
+        "required": true,
+        "min": 18,
+        "max": 100
+      },
+      "defaultValue": 37
+    },
+    {
+      "label": "Annual Income",
+      "type": "number",
+      "layout": {
+        "row": "row_1",
+        "columns": null
+      },
+      "id": "Field_1bx4rtc",
+      "key": "applicant_annual_income",
+      "readonly": false,
+      "appearance": {
+        "prefixAdorner": "$"
+      },
+      "validate": {
+        "required": true,
+        "min": 10000,
+        "max": 9999999
+      },
+      "defaultValue": 93000,
+      "decimalDigits": 0,
+      "increment": "1"
+    },
+    {
+      "label": "Credit Score (300 - 850)",
+      "type": "number",
+      "layout": {
+        "row": "row_1",
+        "columns": null
+      },
+      "id": "Field_1uhpmy6",
+      "key": "applicant_credit_score",
+      "readonly": false,
+      "validate": {
+        "required": true,
+        "min": 300,
+        "max": 850
+      },
+      "defaultValue": 565,
+      "decimalDigits": 0,
+      "increment": "1"
+    },
+    {
+      "text": "### Loan Information",
+      "type": "text",
+      "id": "Heading_13",
+      "layout": {
+        "row": "row_5",
+        "columns": null
+      }
+    },
+    {
+      "label": "Loan Amount",
+      "type": "number",
+      "layout": {
+        "row": "row_6",
+        "columns": null
+      },
+      "id": "Field_154mlwp",
+      "key": "loan_amount",
+      "readonly": false,
+      "appearance": {
+        "prefixAdorner": "$"
+      },
+      "validate": {
+        "min": 1,
+        "required": true,
+        "max": 9999999
+      },
+      "defaultValue": 61100,
+      "increment": "1",
+      "decimalDigits": 0
+    },
+    {
+      "label": "Interest Rate AER in % (0.01 - 99.99)",
+      "type": "number",
+      "layout": {
+        "row": "row_6",
+        "columns": null
+      },
+      "id": "Field_1ypr81x",
+      "key": "loan_interest_rate_percent",
+      "readonly": false,
+      "validate": {
+        "min": 0.01,
+        "max": 99.99,
+        "required": true
+      },
+      "decimalDigits": 2,
+      "increment": "0.01",
+      "defaultValue": 5.04
+    },
+    {
+      "label": "Loan Term in Months (1 - 360)",
+      "type": "number",
+      "layout": {
+        "row": "row_6",
+        "columns": null
+      },
+      "id": "Field_10885hn",
+      "key": "loan_term_months",
+      "readonly": false,
+      "validate": {
+        "min": 1,
+        "required": true,
+        "max": 600
+      },
+      "defaultValue": 116,
+      "decimalDigits": 0,
+      "increment": "1"
+    },
+    {
+      "label": "Separator",
+      "type": "separator",
+      "layout": {
+        "row": "Row_13ntlcg",
+        "columns": null
+      },
+      "id": "Field_1y1ask0"
+    },
+    {
+      "text": "Default flow via the AI. To create or update training data you may redirect the flow directly to human decision.",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0epsdmn",
+        "columns": null
+      },
+      "id": "Field_0zxl93m"
+    },
+    {
+      "label": "AI Supported",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_0epsdmn",
+        "columns": 3
+      },
+      "id": "Field_1levfo4",
+      "key": "send_to_ai",
+      "defaultValue": true
+    }
+  ],
+  "generated": true,
+  "type": "default"
+}</zeebe:userTaskForm>
+      <zeebe:userTaskForm id="UserTaskForm_305n2k7">{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.5.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "7aa839a"
+  },
+  "schemaVersion": 16,
+  "id": "Form_uxliubv",
+  "components": [
+    {
+      "text": "# Loan Application",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_07c0ygr",
+        "columns": null
+      },
+      "id": "Field_18oxemb"
+    },
+    {
+      "text": "**Model decision uncertain. Human judgement needed.**",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1b3zhmp",
+        "columns": null
+      },
+      "id": "Field_1rzfny0",
+      "conditional": {
+        "hide": "=not(model_probability_text = \"good\")"
+      }
+    },
+    {
+      "label": "Model Suggestion",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1ydmgdg",
+        "columns": null
+      },
+      "id": "Field_0my63ax",
+      "key": "model_decision",
+      "readonly": true,
+      "properties": { },
+      "conditional": {
+        "hide": "=not(model_probability_text = \"good\")"
+      }
+    },
+    {
+      "label": "Probability (text)",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1ydmgdg",
+        "columns": null
+      },
+      "id": "Field_1hmgtor",
+      "key": "model_probability_text",
+      "readonly": true,
+      "description": "low, good, or high",
+      "conditional": {
+        "hide": "=not(model_probability_text = \"good\")"
+      }
+    },
+    {
+      "label": "Probability (float)",
+      "type": "number",
+      "layout": {
+        "row": "Row_1ydmgdg",
+        "columns": null
+      },
+      "id": "Field_1pln6sc",
+      "key": "model_probability",
+      "description": "0 to 1",
+      "readonly": true,
+      "conditional": {
+        "hide": "=not(model_probability_text = \"good\")"
+      }
+    },
+    {
+      "values": [
+        {
+          "label": "Approve ✅",
+          "value": "approved"
+        },
+        {
+          "label": "Deny ❌",
+          "value": "denied"
+        }
+      ],
+      "label": "Human Expert Decision",
+      "type": "select",
+      "layout": {
+        "row": "Row_1w472d9",
+        "columns": null
+      },
+      "id": "Field_111w8sd",
+      "key": "human_expert_decision",
+      "readonly": false,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Separator",
+      "type": "separator",
+      "layout": {
+        "row": "Row_10hhs1a",
+        "columns": null
+      },
+      "id": "Field_0p5zpzu"
+    },
+    {
+      "text": "### Personal Information",
+      "type": "text",
+      "id": "Heading_0",
+      "layout": {
+        "row": "row_0",
+        "columns": null
+      }
+    },
+    {
+      "label": "Age",
+      "type": "number",
+      "layout": {
+        "row": "row_1",
+        "columns": null
+      },
+      "id": "Field_0v9oveh",
+      "key": "applicant_age",
+      "decimalDigits": 0,
+      "increment": "1",
+      "readonly": true
+    },
+    {
+      "label": "Annual Income",
+      "type": "number",
+      "layout": {
+        "row": "row_1",
+        "columns": null
+      },
+      "id": "Field_1bx4rtc",
+      "key": "applicant_annual_income",
+      "readonly": true,
+      "appearance": {
+        "prefixAdorner": "$"
+      }
+    },
+    {
+      "label": "Credit Score",
+      "type": "number",
+      "layout": {
+        "row": "row_1",
+        "columns": null
+      },
+      "id": "Field_1uhpmy6",
+      "key": "applicant_credit_score",
+      "readonly": true
+    },
+    {
+      "text": "### Loan Information",
+      "type": "text",
+      "id": "Heading_13",
+      "layout": {
+        "row": "row_5",
+        "columns": null
+      }
+    },
+    {
+      "label": "Loan Amount",
+      "type": "number",
+      "layout": {
+        "row": "row_6",
+        "columns": null
+      },
+      "id": "Field_154mlwp",
+      "key": "loan_amount",
+      "readonly": true,
+      "appearance": {
+        "prefixAdorner": "$"
+      }
+    },
+    {
+      "label": "Interest Rate",
+      "type": "number",
+      "layout": {
+        "row": "row_6",
+        "columns": null
+      },
+      "id": "Field_1ypr81x",
+      "key": "loan_interest_rate_percent",
+      "readonly": true
+    },
+    {
+      "label": "Loan Term",
+      "type": "number",
+      "layout": {
+        "row": "row_6",
+        "columns": null
+      },
+      "id": "Field_10885hn",
+      "key": "loan_term_months",
+      "readonly": true
+    }
+  ],
+  "generated": true,
+  "type": "default"
+}</zeebe:userTaskForm>
+    </bpmn:extensionElements>
+    <bpmn:dataStoreReference id="DataStoreReference_03xl3x8" name="DB with training dataset" />
+    <bpmn:sequenceFlow id="Flow_0z1uohq" sourceRef="StartEvent_1" targetRef="Activity_1xua36a" />
+    <bpmn:sequenceFlow id="Flow_14nndjl" sourceRef="Activity_1xua36a" targetRef="Activity_1jfykk4" />
+    <bpmn:sequenceFlow id="Flow_0phook4" sourceRef="Activity_1jfykk4" targetRef="Activity_0rihje8" />
+    <bpmn:sequenceFlow id="Flow_0ko3754" sourceRef="Activity_0rihje8" targetRef="Event_0ngwol7" />
+    <bpmn:sequenceFlow id="Flow_1r5ie31" sourceRef="Event_0utaits" targetRef="Event_0ihqlmd" />
+    <bpmn:startEvent id="StartEvent_1" name="Loan application requested">
+      <bpmn:outgoing>Flow_0z1uohq</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Activity_1xua36a" name="Apply for loan">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_019h49d" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0z1uohq</bpmn:incoming>
+      <bpmn:outgoing>Flow_14nndjl</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:subProcess id="Activity_1jfykk4" name="AI Decision Gateway Process">
+      <bpmn:incoming>Flow_14nndjl</bpmn:incoming>
+      <bpmn:outgoing>Flow_0phook4</bpmn:outgoing>
+      <bpmn:startEvent id="Event_07n9rms" name="AI Decision Gateway Process started">
+        <bpmn:outgoing>Flow_05med66</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:exclusiveGateway id="Gateway_0kr3dzz" name="let AI decide or train AI?" default="Flow_0f1t2cv">
+        <bpmn:incoming>Flow_05med66</bpmn:incoming>
+        <bpmn:outgoing>Flow_02ghctv</bpmn:outgoing>
+        <bpmn:outgoing>Flow_0f1t2cv</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:endEvent id="Event_0t26c1b" name="AI to be trained -&#10;human to take decision directly">
+        <bpmn:incoming>Flow_0f1t2cv</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:intermediateThrowEvent id="Event_0s3aiyi" name="AI to take decision">
+        <bpmn:incoming>Flow_02ghctv</bpmn:incoming>
+        <bpmn:outgoing>Flow_079o3um</bpmn:outgoing>
+      </bpmn:intermediateThrowEvent>
+      <bpmn:exclusiveGateway id="Gateway_1ns638v" name="probability of AI prediction?">
+        <bpmn:incoming>Flow_0uw2sj8</bpmn:incoming>
+        <bpmn:outgoing>Flow_0s4szwy</bpmn:outgoing>
+        <bpmn:outgoing>Flow_1x54klj</bpmn:outgoing>
+        <bpmn:outgoing>Flow_0mqhv22</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:endEvent id="Event_1bnf5bl" name="Human to take decision w/o AI suggestion">
+        <bpmn:incoming>Flow_0s4szwy</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:endEvent id="Event_0qtmvfr" name="Human to take decision with AI suggestion">
+        <bpmn:incoming>Flow_1x54klj</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:endEvent id="Event_1q2asmu" name="Autonomous AI decision accepted">
+        <bpmn:incoming>Flow_0mqhv22</bpmn:incoming>
+        <bpmn:escalationEventDefinition id="EscalationEventDefinition_0qt4f4a" escalationRef="Escalation_1e2dedi" />
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_05med66" sourceRef="Event_07n9rms" targetRef="Gateway_0kr3dzz" />
+      <bpmn:sequenceFlow id="Flow_079o3um" sourceRef="Event_0s3aiyi" targetRef="ModelInference" />
+      <bpmn:sequenceFlow id="Flow_0uw2sj8" sourceRef="ModelInference" targetRef="Gateway_1ns638v" />
+      <bpmn:sequenceFlow id="Flow_02ghctv" name="let AI decide" sourceRef="Gateway_0kr3dzz" targetRef="Event_0s3aiyi">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=send_to_ai</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_0f1t2cv" name="train AI" sourceRef="Gateway_0kr3dzz" targetRef="Event_0t26c1b" />
+      <bpmn:sequenceFlow id="Flow_0s4szwy" name="low" sourceRef="Gateway_1ns638v" targetRef="Event_1bnf5bl">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=model_probability_text = "low"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_1x54klj" name="good" sourceRef="Gateway_1ns638v" targetRef="Event_0qtmvfr">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=model_probability_text = "good"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_0mqhv22" name="high" sourceRef="Gateway_1ns638v" targetRef="Event_1q2asmu">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=model_probability_text = "high"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:serviceTask id="ModelInference" name="Model Inference" zeebe:modelerTemplate="io.camunda.connectors.AWSSAGEMAKER.v1" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iODBweCIgaGVpZ2h0PSI4MHB4IiB2aWV3Qm94PSIwIDAgODAgODAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+SWNvbi1BcmNoaXRlY3R1cmUvNjQvQXJjaF9BbWF6b24tU2FnZU1ha2VyXzY0PC90aXRsZT4KICAgIDxnIGlkPSJJY29uLUFyY2hpdGVjdHVyZS82NC9BcmNoX0FtYXpvbi1TYWdlTWFrZXJfNjQiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxnIGlkPSJJY29uLUFyY2hpdGVjdHVyZS1CRy82NC9NYWNoaW5lLUxlYXJuaW5nIiBmaWxsPSIjMDFBODhEIj4KICAgICAgICAgICAgPHJlY3QgaWQ9IlJlY3RhbmdsZSIgeD0iMCIgeT0iMCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIj48L3JlY3Q+CiAgICAgICAgPC9nPgogICAgICAgIDxwYXRoIGQ9Ik01NC4wMzQsMjYuMDMzNTczMSBDNTQuMDM0LDI2LjU5MzU2NTQgNTMuNTc4LDI3LjA0OTU1OTIgNTMuMDE3LDI3LjA0OTU1OTIgQzUyLjQ1OCwyNy4wNDk1NTkyIDUyLjAwMiwyNi41OTM1NjU0IDUyLjAwMiwyNi4wMzM1NzMxIEM1Mi4wMDIsMjUuNDczNTgwNyA1Mi40NTgsMjUuMDE3NTg2OSA1My4wMTcsMjUuMDE3NTg2OSBDNTMuNTc4LDI1LjAxNzU4NjkgNTQuMDM0LDI1LjQ3MzU4MDcgNTQuMDM0LDI2LjAzMzU3MzEgTDU0LjAzNCwyNi4wMzM1NzMxIFogTTQ4LjAwMiwzNi4wMDA0MzcgQzQ4LjAwMiwzNS40NDk0NDQ1IDQ4LjQ1LDM1LjAwMDQ1MDYgNDkuMDAyLDM1LjAwMDQ1MDYgQzQ5LjU1NCwzNS4wMDA0NTA2IDUwLjAwMiwzNS40NDk0NDQ1IDUwLjAwMiwzNi4wMDA0MzcgQzUwLjAwMiwzNi41NTE0Mjk0IDQ5LjU1NCwzNy4wMDA0MjMzIDQ5LjAwMiwzNy4wMDA0MjMzIEM0OC40NSwzNy4wMDA0MjMzIDQ4LjAwMiwzNi41NTE0Mjk0IDQ4LjAwMiwzNi4wMDA0MzcgTDQ4LjAwMiwzNi4wMDA0MzcgWiBNNDguMDAyLDU1LjAwMDE3NzUgQzQ4LjAwMiw1NC40NDkxODUgNDguNDUsNTQuMDAwMTkxMiA0OS4wMDIsNTQuMDAwMTkxMiBDNDkuNTU0LDU0LjAwMDE5MTIgNTAuMDAyLDU0LjQ0OTE4NSA1MC4wMDIsNTUuMDAwMTc3NSBDNTAuMDAyLDU1LjU1MTE3IDQ5LjU1NCw1Ni4wMDAxNjM5IDQ5LjAwMiw1Ni4wMDAxNjM5IEM0OC40NSw1Ni4wMDAxNjM5IDQ4LjAwMiw1NS41NTExNyA0OC4wMDIsNTUuMDAwMTc3NSBMNDguMDAyLDU1LjAwMDE3NzUgWiBNNTguMDAyLDQyLjAwMDM1NSBDNTguMDAyLDQyLjU1MTM0NzUgNTcuNTU0LDQzLjAwMDM0MTQgNTcuMDAyLDQzLjAwMDM0MTQgQzU2LjQ1LDQzLjAwMDM0MTQgNTYuMDAyLDQyLjU1MTM0NzUgNTYuMDAyLDQyLjAwMDM1NSBDNTYuMDAyLDQxLjQ0OTM2MjYgNTYuNDUsNDEuMDAwMzY4NyA1Ny4wMDIsNDEuMDAwMzY4NyBDNTcuNTU0LDQxLjAwMDM2ODcgNTguMDAyLDQxLjQ0OTM2MjYgNTguMDAyLDQyLjAwMDM1NSBMNTguMDAyLDQyLjAwMDM1NSBaIE02NSw0NS4yNzIzMTA0IEw1OS45NjMsNDIuMzgyMzQ5OCBDNTkuOTc5LDQyLjI1NjM1MTUgNjAuMDAyLDQyLjEzMTM1MzIgNjAuMDAyLDQyLjAwMDM1NSBDNjAuMDAyLDQwLjM0NjM3NzYgNTguNjU2LDM5LjAwMDM5NiA1Ny4wMDIsMzkuMDAwMzk2IEM1NS4zNDcsMzkuMDAwMzk2IDU0LjAwMiw0MC4zNDYzNzc2IDU0LjAwMiw0Mi4wMDAzNTUgQzU0LjAwMiw0My42NTQzMzI0IDU1LjM0Nyw0NS4wMDAzMTQxIDU3LjAwMiw0NS4wMDAzMTQxIEM1Ny44MDEsNDUuMDAwMzE0MSA1OC41MjMsNDQuNjgxMzE4NCA1OS4wNjEsNDQuMTcxMzI1NCBMNjMuODg2LDQ2LjkzOTI4NzYgTDU5LjU1NSw0OS4xMDUyNTggQzU5LjIxNiw0OS4yNzUyNTU3IDU5LjAwMiw0OS42MjEyNTEgNTkuMDAyLDUwLjAwMDI0NTggTDU5LjAwMiw1OC40NDExMzA1IEw0Ni45ODMsNjUuODM3MDI5NSBMNDEuMDAzLDYyLjQyMDA3NjIgTDQxLjAwMyw1Ni4wMDAxNjM5IEw0Ni4xODYsNTYuMDAwMTYzOSBDNDYuNiw1Ny4xNjExNDggNDcuNyw1OC4wMDAxMzY2IDQ5LjAwMiw1OC4wMDAxMzY2IEM1MC42NTYsNTguMDAwMTM2NiA1Mi4wMDIsNTYuNjU0MTU0OSA1Mi4wMDIsNTUuMDAwMTc3NSBDNTIuMDAyLDUzLjM0NTIwMDEgNTAuNjU2LDUyLjAwMDIxODUgNDkuMDAyLDUyLjAwMDIxODUgQzQ3LjcsNTIuMDAwMjE4NSA0Ni42LDUyLjgzODIwNyA0Ni4xODYsNTQuMDAwMTkxMiBMNDEuMDAzLDU0LjAwMDE5MTIgTDQxLjAwMyw0MC4wMDAzODIzIEM0MS4wMDMsMzkuNjQ5Mzg3MSA0MC44MTgsMzkuMzIzMzkxNiA0MC41MTcsMzkuMTQyMzk0MSBMMzUuNTE2LDM2LjE0MjQzNSBMMzQuNDg3LDM3Ljg1NzQxMTYgTDM5LjAwMyw0MC41NjYzNzQ2IEwzOS4wMDMsNDMuNTA3MzM0NSBMMzMuMDAyLDQ4LjEyMzI3MTQgTDMzLjAwMiw0NC4wMDAzMjc3IEMzMy4wMDIsNDMuNjk2MzMxOSAzMi44NjQsNDMuNDA4MzM1OCAzMi42MjcsNDMuMjE5MzM4NCBMMjguMDAyLDM5LjUxOTM4ODkgTDI4LjAwMiwzNC41MzU0NTcgTDMzLjU1NiwzMC44MzI1MDc1IEMzMy44MzUsMzAuNjQ2NTEwMSAzNC4wMDIsMzAuMzM0NTE0MyAzNC4wMDIsMzAuMDAwNTE4OSBMMzQuMDAyLDI0LjAwMDYwMDggTDMyLjAwMiwyNC4wMDA2MDA4IEwzMi4wMDIsMjkuNDY1NTI2MiBMMjcuMDEzLDMyLjc5MDQ4MDggTDIyLjAwMiwyOS40NjM1MjYyIEwyMi4wMDIsMjEuNTc0NjMzOSBMMjcuMDAyLDE4LjY1ODY3MzggTDI3LjAwMiwyNy4wMDA1NTk5IEwyOS4wMDIsMjcuMDAwNTU5OSBMMjkuMDAyLDE3LjQ5MTY4OTcgTDMzLjAwNSwxNS4xNTY3MjE2IEwzOS4wMDEsMTguNjE1Njc0NCBMMzkuMDAyLDMxLjAwMDUwNTIgQzM5LjAwMiwzMS4zNTk1MDAzIDM5LjE5NCwzMS42OTA0OTU4IDM5LjUwNiwzMS44Njg0OTM0IEw0Ni4wNDIsMzUuNjAzNDQyNCBDNDYuMDI0LDM1LjczNDQ0MDYgNDYuMDAyLDM1Ljg2NDQzODggNDYuMDAyLDM2LjAwMDQzNyBDNDYuMDAyLDM3LjY1NDQxNDQgNDcuMzQ3LDM5LjAwMDM5NiA0OS4wMDIsMzkuMDAwMzk2IEM1MC42NTYsMzkuMDAwMzk2IDUyLjAwMiwzNy42NTQ0MTQ0IDUyLjAwMiwzNi4wMDA0MzcgQzUyLjAwMiwzNC4zNDY0NTk1IDUwLjY1NiwzMy4wMDA0Nzc5IDQ5LjAwMiwzMy4wMDA0Nzc5IEM0OC4yMDgsMzMuMDAwNDc3OSA0Ny40OSwzMy4zMTU0NzM2IDQ2Ljk1MywzMy44MjA0NjY3IEw0MS4wMDIsMzAuNDE5NTEzMiBMNDEuMDAxLDE4LjYxNzY3NDMgTDQ2Ljk2NCwxNS4xNzY3MjEzIEw1OC4wMDIsMjIuNTM1NjIwOCBMNTguMDAyLDI1LjAwMDU4NzIgTDU1Ljg1MSwyNS4wMDA1ODcyIEM1NS40MjksMjMuODQ0NjAzIDU0LjMxOCwyMy4wMTc2MTQyIDUzLjAxNywyMy4wMTc2MTQyIEM1MS4zNTQsMjMuMDE3NjE0MiA1MC4wMDIsMjQuMzcwNTk1OCA1MC4wMDIsMjYuMDMzNTczMSBDNTAuMDAyLDI3LjY5NjU1MDQgNTEuMzU0LDI5LjA0OTUzMTkgNTMuMDE3LDI5LjA0OTUzMTkgQzU0LjM0MywyOS4wNDk1MzE5IDU1LjQ3MSwyOC4xOTA1NDM2IDU1Ljg3NSwyNy4wMDA1NTk5IEw1OC4wMDIsMjcuMDAwNTU5OSBMNTguMDAyLDMwLjAwMDUxODkgQzU4LjAwMiwzMC4zNTk1MTQgNTguMTk0LDMwLjY5MDUwOTUgNTguNTA2LDMwLjg2ODUwNyBMNjUsMzQuNTgwNDU2NCBMNjUsNDUuMjcyMzEwNCBaIE0zMy4wMiw2NS44MzcwMjk1IEwyOS44NjcsNjMuODk3MDU2IEwzNS41ODMsNTkuODE0MTExOCBMMzQuNDIxLDU4LjE4NjEzNCBMMjguMDE4LDYyLjc1OTA3MTYgTDIxLjAwMiw1OC40NDExMzA1IEwyMS4wMDIsNTAuNTY2MjM4MSBMMjUuNTE2LDQ3Ljg1NzI3NTEgTDI0LjQ4Nyw0Ni4xNDIyOTg1IEwxOS45NTgsNDguODYwMjYxNCBMMTUuMDAyLDQ2LjM4MjI5NTIgTDE1LjAwMSw0MC42MTczNzM5IEwyMC40NDksMzcuODk0NDExMSBMMTkuNTU1LDM2LjEwNTQzNTUgTDE1LjAwMSwzOC4zODE0MDQ0IEwxNS4wMDIsMzQuNTgwNDU2NCBMMjAuOTYzLDMxLjE3NDUwMjkgTDI2LjAwMiwzNC41MTk0NTcyIEwyNi4wMDIsMzkuNDgwMzg5NCBMMjAuNDQ5LDQzLjE2NzMzOTEgTDIxLjU1NSw0NC44MzMzMTYzIEwyNi45NTgsNDEuMjQ1MzY1MyBMMzEuMDAyLDQ0LjQ4MDMyMTIgTDMxLjAwMiw0OS42NjIyNTA0IEwyNi4zOTIsNTMuMjA3MjAyIEwyNy42MTEsNTQuNzkyMTgwNCBMMzkuMDAzLDQ2LjAzMDMgTDM5LjAwMyw2Mi40MTkwNzYyIEwzMy4wMiw2NS44MzcwMjk1IFogTTY2LjQ5NiwzMy4xMzI0NzYxIEw2MC4wMDIsMjkuNDIwNTI2OCBMNjAuMDAyLDIyLjAwMDYyODEgQzYwLjAwMiwyMS42NjU2MzI3IDU5LjgzNSwyMS4zNTM2MzcgNTkuNTU2LDIxLjE2ODYzOTUgTDQ3LjU1NiwxMy4xNjg3NDg3IEM0Ny4yNCwxMi45NTg3NTE2IDQ2LjgzMiwxMi45NDQ3NTE4IDQ2LjUwMiwxMy4xMzQ3NDkyIEw0MC4wMDQsMTYuODg0Njk4IEwzMy41MDIsMTMuMTM0NzQ5MiBDMzMuMTksMTIuOTU0NzUxNyAzMi44MDcsMTIuOTU0NzUxNyAzMi40OTgsMTMuMTM2NzQ5MiBMMjAuNDk4LDIwLjEzNjY1MzYgQzIwLjE5LDIwLjMxNTY1MTEgMjAuMDAyLDIwLjY0NDY0NjYgMjAuMDAyLDIxLjAwMDY0MTggTDIwLjAwMiwyOS40MjA1MjY4IEwxMy41MDYsMzMuMTMyNDc2MSBDMTMuMTk0LDMzLjMwOTQ3MzcgMTMuMDAyLDMzLjY0MTQ2OTIgMTMuMDAyLDM0LjAwMDQ2NDMgTDEzLjAwMiwzNC40MTc0NTg2IEMxMy4wMDEsMzQuNDM4NDU4MyAxMywzNC40NTg0NTggMTMsMzQuNDc5NDU3NyBMMTMsNDUuMzYzMzA5MSBDMTMsNDUuMzgzMzA4OCAxMy4wMDEsNDUuNDAzMzA4NiAxMy4wMDIsNDUuNDIyMzA4MyBMMTMuMDAyLDQ3LjAwMDI4NjggQzEzLjAwMiw0Ny4zNzkyODE2IDEzLjIxNiw0Ny43MjUyNzY5IDEzLjU1NSw0Ny44OTQyNzQ1IEwxOS4wMDIsNTAuNjE4MjM3NCBMMTkuMDAyLDU5LjAwMDEyMjkgQzE5LjAwMiw1OS4zNDcxMTgyIDE5LjE4MSw1OS42NjkxMTM4IDE5LjQ3Nyw1OS44NTExMTEzIEwzMi40NzcsNjcuODUxMDAyIEMzMi42MzgsNjcuOTUwMDAwNyAzMi44Miw2OCAzMy4wMDIsNjggQzMzLjE3Myw2OCAzMy4zNDQsNjcuOTU2MDAwNiAzMy40OTgsNjcuODY4MDAxOCBMNDAuMDAzLDY0LjE1MjA1MjUgTDQ2LjUwNiw2Ny44NjgwMDE4IEM0Ni44MjEsNjguMDQ4OTk5MyA0Ny4yMTMsNjguMDQxOTk5NCA0Ny41MjYsNjcuODUxMDAyIEw2MC41MjYsNTkuODUxMTExMyBDNjAuODIyLDU5LjY2OTExMzggNjEuMDAyLDU5LjM0NzExODIgNjEuMDAyLDU5LjAwMDEyMjkgTDYxLjAwMiw1MC42MTgyMzc0IEw2Ni40NDcsNDcuODk0Mjc0NSBDNjYuNzg2LDQ3LjcyNTI3NjkgNjcsNDcuMzc5MjgxNiA2Nyw0Ny4wMDAyODY4IEw2NywzNC4wMDA0NjQzIEM2NywzMy42NDE0NjkyIDY2LjgwNywzMy4zMTA0NzM3IDY2LjQ5NiwzMy4xMzI0NzYxIEw2Ni40OTYsMzMuMTMyNDc2MSBaIiBpZD0iQW1hem9uLVNhZ2VNYWtlcl9JY29uXzY0X1NxdWlkIiBmaWxsPSIjRkZGRkZGIj48L3BhdGg+CiAgICA8L2c+Cjwvc3ZnPg==">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:aws-sagemaker:1" retries="3" />
+          <zeebe:ioMapping>
+            <zeebe:input source="credentials" target="authentication.type" />
+            <zeebe:input source="=&#34;{{secrets.AwsSagemakerKey}}&#34;" target="authentication.accessKey" />
+            <zeebe:input source="=&#34;{{secrets.AwsSagemakerSecret}}&#34;" target="authentication.secretKey" />
+            <zeebe:input source="us-east-1" target="configuration.region" />
+            <zeebe:input source="SYNC" target="input.invocationType" />
+            <zeebe:input source="canvas-ai-loan-decision" target="input.endpointName" />
+            <zeebe:input source="={&#10;  &#34;data&#34;: {&#10;    &#34;features&#34;: {&#10;      &#34;values&#34;: [&#10;        applicant_age, &#10;        loan_amount,&#10;        loan_term_months,&#10;        loan_interest_rate_percent,&#10;        applicant_credit_score,&#10;        applicant_annual_income  &#10;      ]&#10;    }&#10;  }&#10;}" target="input.body" />
+            <zeebe:input source="application/json" target="input.contentType" />
+            <zeebe:input source="application/json" target="input.accept" />
+            <zeebe:input source="NOT_SET" target="input.enableExplanations" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="resultExpression" value="={&#10;  first_prediction: response.body.predictions[1],&#10;  variables: {&#10;    model_decision: first_prediction.predicted_label, &#10;    model_probability: first_prediction.probability, &#10;    model_probability_text: if model_probability &#60; 0.8 then &#34;low&#34; else &#10;      if model_probability &#60; 0.9 then &#34;good&#34; else &#34;high&#34;&#10;  }&#10;}.variables" />
+            <zeebe:header key="retryBackoff" value="PT1S" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_079o3um</bpmn:incoming>
+        <bpmn:outgoing>Flow_0uw2sj8</bpmn:outgoing>
+        <bpmn:property id="Property_03fcw28" name="__targetRef_placeholder" />
+      </bpmn:serviceTask>
+    </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Event_0utaits" name="AI decision accepted -&#10;human decision&#10;to be skipped" attachedToRef="Activity_1jfykk4">
+      <bpmn:outgoing>Flow_1r5ie31</bpmn:outgoing>
+      <bpmn:escalationEventDefinition id="EscalationEventDefinition_0rfqd26" escalationRef="Escalation_1e2dedi" />
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="Event_0ihqlmd" name="AI decided on loan application">
+      <bpmn:incoming>Flow_1r5ie31</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_0ngwol7" name="Human decided on loan application">
+      <bpmn:incoming>Flow_0ko3754</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_0rihje8" name="Human decides">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_305n2k7" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0phook4</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ko3754</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_0etsjpv">
+        <bpmn:targetRef>DataStoreReference_03xl3x8</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmn:process id="Process_0vy27uk" isExecutable="false">
+    <bpmn:sequenceFlow id="Flow_1rmvdsa" sourceRef="Event_1gig8dm" targetRef="Activity_16grji2" />
+    <bpmn:sequenceFlow id="Flow_1m0oj8s" sourceRef="Activity_16grji2" targetRef="Event_1imvvck" />
+    <bpmn:startEvent id="Event_1gig8dm" name="AI model training started">
+      <bpmn:outgoing>Flow_1rmvdsa</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_1imvvck" name="AI model training completed">
+      <bpmn:incoming>Flow_1m0oj8s</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:manualTask id="Activity_16grji2" name="Train AI Decision Model">
+      <bpmn:incoming>Flow_1rmvdsa</bpmn:incoming>
+      <bpmn:outgoing>Flow_1m0oj8s</bpmn:outgoing>
+      <bpmn:property id="Property_0y5syj0" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_1owe2th">
+        <bpmn:sourceRef>DataStoreReference_03xl3x8</bpmn:sourceRef>
+        <bpmn:targetRef>Property_0y5syj0</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:manualTask>
+  </bpmn:process>
+  <bpmn:escalation id="Escalation_1e2dedi" name="AI decision accepted" escalationCode="ai_decision_accepted" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0wtx8ze">
+      <bpmndi:BPMNShape id="Participant_1yaotn7_di" bpmnElement="Participant_1yaotn7" isHorizontal="true">
+        <dc:Bounds x="160" y="50" width="1240" height="480" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1rkxu08" bpmnElement="StartEvent_1">
+        <dc:Bounds x="232" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="210" y="205" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0z1hrvh_di" bpmnElement="Activity_1xua36a">
+        <dc:Bounds x="310" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1jfykk4_di" bpmnElement="Activity_1jfykk4" isExpanded="true">
+        <dc:Bounds x="450" y="80" width="680" height="420" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07n9rms_di" bpmnElement="Event_07n9rms">
+        <dc:Bounds x="492" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="467" y="205" width="87" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0kr3dzz_di" bpmnElement="Gateway_0kr3dzz" isMarkerVisible="true">
+        <dc:Bounds x="565" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="552" y="126" width="75" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0t26c1b_di" bpmnElement="Event_0t26c1b">
+        <dc:Bounds x="702" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="681" y="325" width="81" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0s3aiyi_di" bpmnElement="Event_0s3aiyi">
+        <dc:Bounds x="702" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="676" y="205" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1ns638v_di" bpmnElement="Gateway_1ns638v" isMarkerVisible="true">
+        <dc:Bounds x="925" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="913" y="126" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1bnf5bl_di" bpmnElement="Event_1bnf5bl">
+        <dc:Bounds x="1052" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1033" y="205" width="74" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0qtmvfr_di" bpmnElement="Event_0qtmvfr">
+        <dc:Bounds x="1052" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1032" y="325" width="76" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_19rwjpk_di" bpmnElement="Event_1q2asmu">
+        <dc:Bounds x="1052" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1026" y="445" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0h8sjja_di" bpmnElement="ModelInference">
+        <dc:Bounds x="780" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_05med66_di" bpmnElement="Flow_05med66">
+        <di:waypoint x="528" y="180" />
+        <di:waypoint x="565" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_079o3um_di" bpmnElement="Flow_079o3um">
+        <di:waypoint x="738" y="180" />
+        <di:waypoint x="780" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uw2sj8_di" bpmnElement="Flow_0uw2sj8">
+        <di:waypoint x="880" y="180" />
+        <di:waypoint x="925" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02ghctv_di" bpmnElement="Flow_02ghctv">
+        <di:waypoint x="615" y="180" />
+        <di:waypoint x="702" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="162" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0f1t2cv_di" bpmnElement="Flow_0f1t2cv">
+        <di:waypoint x="590" y="205" />
+        <di:waypoint x="590" y="300" />
+        <di:waypoint x="702" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="633" y="283" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0s4szwy_di" bpmnElement="Flow_0s4szwy">
+        <di:waypoint x="975" y="180" />
+        <di:waypoint x="1052" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="991" y="163" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1x54klj_di" bpmnElement="Flow_1x54klj">
+        <di:waypoint x="950" y="205" />
+        <di:waypoint x="950" y="300" />
+        <di:waypoint x="1052" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="987" y="283" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mqhv22_di" bpmnElement="Flow_0mqhv22">
+        <di:waypoint x="950" y="205" />
+        <di:waypoint x="950" y="420" />
+        <di:waypoint x="1052" y="420" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="989" y="403" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0ihqlmd_di" bpmnElement="Event_0ihqlmd">
+        <dc:Bounds x="1322" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1302" y="445" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ryexo8_di" bpmnElement="Event_0ngwol7">
+        <dc:Bounds x="1322" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1302" y="205" width="78" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1wgyama_di" bpmnElement="Activity_0rihje8">
+        <dc:Bounds x="1180" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_18r39y3_di" bpmnElement="Event_0utaits">
+        <dc:Bounds x="1112" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1141" y="432" width="78" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0z1uohq_di" bpmnElement="Flow_0z1uohq">
+        <di:waypoint x="268" y="180" />
+        <di:waypoint x="310" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14nndjl_di" bpmnElement="Flow_14nndjl">
+        <di:waypoint x="410" y="180" />
+        <di:waypoint x="450" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0phook4_di" bpmnElement="Flow_0phook4">
+        <di:waypoint x="1130" y="180" />
+        <di:waypoint x="1180" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ko3754_di" bpmnElement="Flow_0ko3754">
+        <di:waypoint x="1280" y="180" />
+        <di:waypoint x="1322" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1r5ie31_di" bpmnElement="Flow_1r5ie31">
+        <di:waypoint x="1148" y="420" />
+        <di:waypoint x="1322" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DataStoreReference_03xl3x8_di" bpmnElement="DataStoreReference_03xl3x8">
+        <dc:Bounds x="1205" y="565" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1191" y="622" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_00dj01x_di" bpmnElement="Participant_03tcz7e" isHorizontal="true">
+        <dc:Bounds x="730" y="650" width="370" height="180" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1gig8dm_di" bpmnElement="Event_1gig8dm">
+        <dc:Bounds x="802" y="722" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="779" y="765" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1imvvck_di" bpmnElement="Event_1imvvck">
+        <dc:Bounds x="1022" y="722" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="999" y="765" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1u1acnb_di" bpmnElement="Activity_16grji2">
+        <dc:Bounds x="880" y="700" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1rmvdsa_di" bpmnElement="Flow_1rmvdsa">
+        <di:waypoint x="838" y="740" />
+        <di:waypoint x="880" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1m0oj8s_di" bpmnElement="Flow_1m0oj8s">
+        <di:waypoint x="980" y="740" />
+        <di:waypoint x="1022" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0etsjpv_di" bpmnElement="DataOutputAssociation_0etsjpv">
+        <di:waypoint x="1230" y="220" />
+        <di:waypoint x="1230" y="565" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1owe2th_di" bpmnElement="DataInputAssociation_1owe2th">
+        <di:waypoint x="1205" y="590" />
+        <di:waypoint x="930" y="590" />
+        <di:waypoint x="930" y="700" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1fju6po_di" bpmnElement="Flow_1fju6po">
+        <di:waypoint x="850" y="650" />
+        <di:waypoint x="850" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="859" y="583" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04ej3j3_di" bpmnElement="Flow_04ej3j3">
+        <di:waypoint x="810" y="220" />
+        <di:waypoint x="810" y="650" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="755" y="584" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
