@@ -9,17 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@carbon/icons-react": "^11.43.0",
-    "@carbon/react": "^1.59.0",
-    "@elastic/elasticsearch": "^8.13.1",
+    "@carbon/icons-react": "^11.57.0",
+    "@carbon/react": "^1.79.0",
+    "@elastic/elasticsearch": "^8.17.1",
     "bpmn-moddle": "^9.0.1",
-    "next": "14.2.3",
-    "react": "^18",
-    "react-dom": "^18"
+    "next": "^15.2.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "eslint": "^8",
+    "eslint": "^8.57.1",
     "eslint-config-next": "14.2.3",
-    "sass": "^1.77.4"
+    "sass": "^1.86.0"
   }
 }
